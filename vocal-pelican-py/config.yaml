@@ -1,6 +1,6 @@
 #
 #sourceDirectory: samples
-sourceDirectory: /var/vocal/pelican
+applicationDirectory: /var/vocal/pelican
 dataBase: weather
 dataBaseUser: gsc
 curl: /usr/bin/curl -L

@@ -15,14 +15,13 @@ from os import system
 
 class WxCollector:
 
-    def execute(self, sourceDirectory, curl, baseUrl, stations):
+    def collection(self, collectionDirectory, curl, baseUrl, stations):
         """
         collect weather files
         """
         timeNow = int(round(time.time()));
-        print timeNow
 
-        os.chdir(sourceDirectory)
+        os.chdir(collectionDirectory)
 
         for station in stations:
             print station
@@ -32,8 +31,23 @@ class WxCollector:
             command = "%s %s%s.xml > %s" % (curl, baseUrl, station, fileName)
             print command
 
-            system(command)
-            
+#            system(command)
+
+    def execute(self, applicationDirectory, curl, baseUrl):
+        """
+        prepare for collection
+        """
+        fileName = "%s/stations.dat" % (applicationDirectory)
+
+        inFile = open(fileName, 'r')
+        stations = inFile.readlines()
+        inFile.close()
+
+        print stations
+
+        collectionDirectory = "%s/collected" % (applicationDirectory)
+
+        self.collection(collectionDirectory, curl, baseUrl, stations)
 
 print 'start'
 
@@ -47,23 +61,15 @@ if __name__ == '__main__':
         fileName = "config.yaml"
 
     configuration = yaml.load(file(fileName))
-    sourceDirectory = configuration['sourceDirectory']
+
+    applicationDirectory = configuration['applicationDirectory']
     curl = configuration['curl']
     baseUrl = configuration['baseUrl']
 
-    stations = [
-        'KRDD', 'KRBL', 'KCIC', 'KACV', 'KCEC', 'KSIY', 'KMFR', 'KLMT', 'KLKV', 'KAAT',
-        'KUKI', 'KMHR', 'KSTS', 'KSUU', 'KSCK', 'KSFO', 'KMRY', 'KAPC', 'KCCR', 'KSJC',
-        'KBOK', 'KSXT', 'KRBG', 'KOTH', 'KEUG', 'KSLE', 'KUAO', 'KHIO', 'KPDX', 'KDLS',
-        'KKLS', 'KCLS', 'KOLM', 'KCLM', 'KPAE', 'KSEA', 'KELN', 'KSKA', 'KCOE', 'KLWS',
-        'KRDM', 'KGCD', 'KBDN', 'KBNO', 'KONO', 'KPDT', 'KMAN', 'KENV', 'KLOL', 'KRNO',
-        'KPAO', 'KHWD', 'KOAK', 'KSQL', 'KRHV', 'KHAF'];
-
     wxCollector = WxCollector()
-    wxCollector.execute(sourceDirectory, curl, baseUrl, stations)
+    wxCollector.execute(applicationDirectory, curl, baseUrl)
 
 print 'stop'
-
 
 #;;; Local Variables: ***
 #;;; mode:python ***
