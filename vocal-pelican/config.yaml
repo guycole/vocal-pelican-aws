@@ -1,0 +1,8 @@
+#
+#sourceDirectory: samples
+sourceDirectory: /var/vocal/pelican
+dataBase: weather
+dataBaseUser: gsc
+curl: /usr/bin/curl -L
+baseUrl: http://w1.weather.gov/xml/current_obs/
+#
