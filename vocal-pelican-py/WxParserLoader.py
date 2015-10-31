@@ -3,10 +3,9 @@
 # Title:WxParserLoader.py
 # Description:
 # Development Environment:OS X 10.8.5/Python 2.7.2
-# Legalise:Copyright (C) 2013 Digital Burro, INC.
 # Author:G.S. Cole (guycole at gmail dot com)
 #
-import pgdb
+#import pgdb
 import os
 import sys
 import yaml
@@ -16,17 +15,7 @@ from WxXmlParser import WxXmlParser
 
 class WxParserLoader:
 
-    def execute(self, sourceDirectory, dataBase, dataBaseUser):
-        """
-        discover, parse and load weather files
-        """
-        weatherDb = pgdb.connect(database = dataBase, user = dataBaseUser, password = '')
-
-        targets = os.listdir(sourceDirectory)
-
-        success = 0
-        failure = 0
-
+    def killme(self):
         for target in targets:
             fileName = "%s/%s" % (sourceDirectory, target)
 
@@ -50,6 +39,30 @@ class WxParserLoader:
 
             os.remove(fileName)
 
+
+    def execute(self, collectedDir):
+        """
+        discover, parse and load weather files
+        """
+        success = 0
+        failure = 0
+
+        targets = os.listdir(collectedDir)
+        for target in targets:
+            fileName = "%s/%s" % (collectedDir, target)
+
+            try:
+                wxXmlParser = WxXmlParser()
+                wxXmlParser.execute(fileName)
+
+                if wxXmlParser.getStationId() == 'Unknown':
+                    failure = failure+1
+                else:
+                    print wxXmlParser.getStationId()
+            except:
+                failure = failure+1
+                print 'exception noted'
+
         print "end success:%d failure:%d" % (success, failure)
 
 print 'start'
@@ -64,15 +77,14 @@ if __name__ == '__main__':
         fileName = "config.yaml"
 
     configuration = yaml.load(file(fileName))
-    sourceDirectory = configuration['sourceDirectory']
-    dataBase = configuration['dataBase']
-    dataBaseUser = configuration['dataBaseUser']
+    collectedDir = configuration['collectedDir']
+#    dataBase = configuration['dataBase']
+#    dataBaseUser = configuration['dataBaseUser']
 
     wxParserLoader = WxParserLoader()
-    wxParserLoader.execute(sourceDirectory, dataBase, dataBaseUser)
+    wxParserLoader.execute(collectedDir)
 
 print 'stop'
-
 
 #;;; Local Variables: ***
 #;;; mode:python ***

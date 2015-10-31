@@ -1,9 +1,8 @@
 #!/usr/bin/python
 #
 # Title:WxCollector.py
-# Description: 
+# Description: Collect stations contained in stations.dat
 # Development Environment:OS X 10.8.5/Python 2.7.2
-# Legalise:Copyright (C) 2013 Digital Burro, INC.
 # Author:G.S. Cole (guycole at gmail dot com)
 #
 import os
@@ -15,39 +14,33 @@ from os import system
 
 class WxCollector:
 
-    def collection(self, collectionDirectory, curl, baseUrl, stations):
+    def collection(self, collectedDir, curl, baseUrl, stations):
         """
         collect weather files
         """
         timeNow = int(round(time.time()));
 
-        os.chdir(collectionDirectory)
+        os.chdir(collectedDir)
 
         for station in stations:
-            print station
-            fileName = "%s.%d" % (station, timeNow)
-            print fileName
+            # kill newline
+            temp = station.split('|')
 
-            command = "%s %s%s.xml > %s" % (curl, baseUrl, station, fileName)
+            fileName = "%s.%d" % (temp[0], timeNow)
+
+            command = "%s %s%s.xml > %s" % (curl, baseUrl, temp[0], fileName)
             print command
+            system(command)
 
-#            system(command)
-
-    def execute(self, applicationDirectory, curl, baseUrl):
+    def execute(self, collectedDir, curl, baseUrl):
         """
         prepare for collection
         """
-        fileName = "%s/stations.dat" % (applicationDirectory)
-
-        inFile = open(fileName, 'r')
+        inFile = open('stations.dat', 'r')
         stations = inFile.readlines()
         inFile.close()
 
-        print stations
-
-        collectionDirectory = "%s/collected" % (applicationDirectory)
-
-        self.collection(collectionDirectory, curl, baseUrl, stations)
+        self.collection(collectedDir, curl, baseUrl, stations)
 
 print 'start'
 
@@ -62,12 +55,12 @@ if __name__ == '__main__':
 
     configuration = yaml.load(file(fileName))
 
-    applicationDirectory = configuration['applicationDirectory']
+    collectedDir = configuration['collectedDir']
     curl = configuration['curl']
     baseUrl = configuration['baseUrl']
 
     wxCollector = WxCollector()
-    wxCollector.execute(applicationDirectory, curl, baseUrl)
+    wxCollector.execute(collectedDir, curl, baseUrl)
 
 print 'stop'
 

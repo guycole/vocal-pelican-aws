@@ -1,0 +1,8 @@
+#
+collectedDir: collected
+curl: /usr/bin/curl -L
+baseUrl: http://w1.weather.gov/xml/current_obs/
+#
+awsAccessKey: bogus
+awsSecretKey: bogus
+#

@@ -3,7 +3,6 @@
 # Title:WxXmlParser.py
 # Description:read and parse a weather service XML file
 # Development Environment:OS X 10.8.5/Python 2.7.2
-# Legalise:Copyright (C) 2013 Digital Burro, INC.
 # Author:G.S. Cole (guycole at gmail dot com)
 #
 import datetime
