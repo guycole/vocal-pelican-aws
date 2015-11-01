@@ -5,7 +5,6 @@
 # Development Environment:OS X 10.8.5/Python 2.7.2
 # Author:G.S. Cole (guycole at gmail dot com)
 #
-#import pgdb
 import os
 import sys
 import yaml
@@ -14,31 +13,6 @@ from WxLoader import WxLoader
 from WxXmlParser import WxXmlParser
 
 class WxParserLoader:
-
-    def killme(self):
-        for target in targets:
-            fileName = "%s/%s" % (sourceDirectory, target)
-
-            try:
-                wxXmlParser = WxXmlParser()
-                wxXmlParser.execute(fileName)
-
-                if wxXmlParser.getStationId() == 'Unknown':
-                    failure = failure+1
-                else:
-                    wxLoader = WxLoader()
-                    retStat = wxLoader.execute(weatherDb, wxXmlParser)
-
-                    if retStat > 0:
-                        success = success+1
-                    else:
-                        failure = failure+1
-            except:
-                failure = failure+1
-                print 'exception noted'
-
-            os.remove(fileName)
-
 
     def execute(self, collectedDir):
         """
@@ -51,21 +25,22 @@ class WxParserLoader:
         for target in targets:
             fileName = "%s/%s" % (collectedDir, target)
 
-            try:
-                wxXmlParser = WxXmlParser()
-                wxXmlParser.execute(fileName)
+            wxXmlParser = WxXmlParser()
+            wxXmlParser.execute(fileName)
 
-                if wxXmlParser.getStationId() == 'Unknown':
-                    failure = failure+1
-                else:
-                    print wxXmlParser.getStationId()
-            except:
+            station_id = wxXmlParser.key_value['station_id']
+            if len(station_id) < 1:
                 failure = failure+1
-                print 'exception noted'
+            else:
+                wxLoader = WxLoader()
+                if wxLoader.execute(wxXmlParser.key_value):
+                    success = success+1
+                else:
+                    failure = failure+1
 
         print "end success:%d failure:%d" % (success, failure)
 
-print 'start'
+print 'start WxParserLoader'
 
 #
 # argv[1] = configuration filename
@@ -78,13 +53,11 @@ if __name__ == '__main__':
 
     configuration = yaml.load(file(fileName))
     collectedDir = configuration['collectedDir']
-#    dataBase = configuration['dataBase']
-#    dataBaseUser = configuration['dataBaseUser']
 
     wxParserLoader = WxParserLoader()
     wxParserLoader.execute(collectedDir)
 
-print 'stop'
+print 'stop WxParserLoader'
 
 #;;; Local Variables: ***
 #;;; mode:python ***

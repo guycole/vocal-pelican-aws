@@ -29,7 +29,6 @@ class WxCollector:
             fileName = "%s.%d" % (temp[0], timeNow)
 
             command = "%s %s%s.xml > %s" % (curl, baseUrl, temp[0], fileName)
-            print command
             system(command)
 
     def execute(self, collectedDir, curl, baseUrl):
@@ -42,7 +41,7 @@ class WxCollector:
 
         self.collection(collectedDir, curl, baseUrl, stations)
 
-print 'start'
+print 'start WxCollector'
 
 #
 # argv[1] = configuration filename
@@ -62,7 +61,7 @@ if __name__ == '__main__':
     wxCollector = WxCollector()
     wxCollector.execute(collectedDir, curl, baseUrl)
 
-print 'stop'
+print 'stop WxCollector'
 
 #;;; Local Variables: ***
 #;;; mode:python ***

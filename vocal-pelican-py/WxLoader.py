@@ -2,53 +2,51 @@
 # Title:WxLoader.py
 # Description:
 # Development Environment:OS X 10.8.5/Python 2.7.2
-# Legalise:Copyright (C) 2013 Digital Burro, INC.
 # Author:G.S. Cole (guycole at gmail dot com)
 #
+import datetime
+import rfc822
 
-from WxXmlParser import WxXmlParser
+import os
+
+import boto.ses
+
+from boto.exception import JSONResponseError
+from boto.dynamodb2.table import Table
 
 class WxLoader:
 
-    def execute(self, weatherDb, wxXmlParser):
-        """
-        words
-        """
-#        print "loader execute:%s" % (wxXmlParser.getStationId())
+    def execute(self, observation):
+        station_id = observation['station_id']
 
-        stationId = wxXmlParser.getStationId()
-        timeStamp = wxXmlParser.getTimeStamp()
-        dewPoint = wxXmlParser.getDewPoint()
-        humidity = wxXmlParser.getHumidity()
-        pressure = wxXmlParser.getPressure()
-        temperature = wxXmlParser.getTemperature()
-        visibility = wxXmlParser.getVisibility()
-        weather = wxXmlParser.getWeather()
-        windDirection = wxXmlParser.getWindDirection()
-        windGust = wxXmlParser.getWindGust()
-        windSpeed = wxXmlParser.getWindSpeed()
-        latitude = wxXmlParser.getLatitude()
-        longitude = wxXmlParser.getLongitude()
+        raw_time = observation['observation_time_rfc822']
+        parsed_time = datetime.datetime.fromtimestamp(rfc822.mktime_tz(rfc822.parsedate_tz(raw_time)))
 
-#
-# check for duplicate
-#
+        epoch = datetime.datetime.utcfromtimestamp(0)
+        delta = int((parsed_time - epoch).total_seconds())
 
-        sql = "select id from raw_sample where station_id = '%s' and time_stamp = '%s'" % (stationId, timeStamp)
-        cursor = weatherDb.cursor()
-        cursor.execute(sql)
-        row = cursor.fetchone()
-        cursor.close()
+        observation['ObservationTime'] = delta
+        observation['StationId'] = station_id
 
-        if (row == None):
-            sql = "insert into raw_sample(station_id, time_stamp, dew_point, humidity, pressure, temperature, visibility, wind_direction, wind_gust, wind_speed, latitude, longitude, weather) values('%s','%s', %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, '%s')" % (stationId, timeStamp, dewPoint, humidity, pressure, temperature, visibility, windDirection, windGust, windSpeed, latitude, longitude, weather)
-            cursor = weatherDb.cursor()
-            cursor.execute(sql)
-            weatherDb.commit()
-            cursor.close()
-            return 1
+        composite_key = "%s_%d" % (station_id, delta)
+        observation['CompositeKey'] = composite_key
 
-        return 0
+        region = os.environ['AWS_DEFAULT_REGION']
+        accessKey = os.environ['AWS_ACCESS_KEY']
+        secretKey = os.environ['AWS_SECRET_KEY']
+
+        try:
+            connx = boto.dynamodb2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
+            obs_table = Table('VocalPelicanObservation', connection = connx)
+            test_row = obs_table.get_item(CompositeKey=composite_key)
+        except JSONResponseError as responseError:
+            # authentication problem
+            print responseError
+        except boto.dynamodb2.exceptions.ItemNotFound as responseError:
+            # not found implies safe to add
+            return obs_table.put_item(observation)
+
+        return False
 
 #;;; Local Variables: ***
 #;;; mode:python ***

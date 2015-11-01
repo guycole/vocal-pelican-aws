@@ -5,125 +5,14 @@
 # Development Environment:OS X 10.8.5/Python 2.7.2
 # Author:G.S. Cole (guycole at gmail dot com)
 #
-import datetime
-import time
-import rfc822
 import sys
-import unicodedata
 import xml.parsers.expat
 
 class WxXmlParser:
     buffer = 'xxx'
 
-    dewpoint = 0
-    humidity = 0
-    latitude = 0.0
-    location = 'Unknown'
-    longitude = 0.0
-    observationTime = 'Unknown'
-    pressure = 0
-    stationId = 'Unknown'
-    temperature = 0.0
-    visibility = 0
-    weather = 'No Weather'
-    windDirection = 0
-    windGust = 0
-    windSpeed = 0
-
-    def getDewPoint(self):
-        """
-        dewpoint in C
-        """
-        return self.dewpoint
-
-    def getHumidity(self):
-        """
-        relative humidity
-        """
-        return self.humidity
-
-    def getLatitude(self):
-        """
-        latitude
-        """
-        return self.latitude
-
-    def getLocation(self):
-        """
-        location
-        """
-        return self.location
-
-    def getLongitude(self):
-        """
-        longitude
-        """
-        return self.longitude
-
-    def getObservationTime(self):
-        """
-        observation time
-        """
-        return self.observationTime
-
-    def getPressure(self):
-        """
-        pressure
-        """
-        return self.pressure
-
-    def getStationId(self):
-        """
-        station identifier
-        """
-        return self.stationId
-
-    def getTemperature(self):
-        """
-        temperature in C
-        """
-        return self.temperature
-
-    def getTimeStamp(self):
-        """
-        return database friendly observation time
-
-        Mon, 17 Jun 2013 13:55:00 -0700
-        (2013, 6, 17, 13, 55, 0, 0, 1, 0, -25200)
-        """
-        parsedTime = rfc822.parsedate_tz(self.observationTime)
-        result = datetime.datetime.fromtimestamp(rfc822.mktime_tz(parsedTime))
-        return result
-
-    def getVisibility(self):
-        """
-        visibility
-        """
-        return self.visibility
-
-    def getWeather(self):
-        """
-        weather
-        """
-        return self.weather
-
-    def getWindDirection(self):
-        """
-        wind direction
-        """
-        return self.windDirection
-
-    def getWindGust(self):
-        """
-        wind gusts in knots
-        """
-        return self.windGust
-
-    def getWindSpeed(self):
-        """
-        wind speed in knots
-        """
-        return self.windSpeed
+    def __init__(self):
+        self.key_value = {}
 
     def start_element(self, name, attrs):
         """
@@ -135,47 +24,139 @@ class WxXmlParser:
         """
         ending XML tag
         """
-        if name == 'dewpoint_c':
-            self.dewpoint = float(self.buffer)
+        if name == 'credit':
+            return
 
-        if name == 'relative_humidity':
-            self.humidity = float(self.buffer)
+        if name == 'credit_URL':
+            return
 
-        if name == 'latitude':
-            self.latitude = float(self.buffer)
+        if name == 'url':
+            return
+
+        if name == 'title':
+            return
+
+        if name == 'link':
+            return
+
+        if name == 'image':
+            return
+
+        if name == 'suggested_pickup':
+            return
+
+        if name == 'suggested_pickup_period':
+            return
 
         if name == 'location':
-            self.location = self.buffer
-
-        if name == 'longitude':
-            self.longitude = float(self.buffer)
-
-        if name == 'observation_time_rfc822':
-            self.observationTime = self.buffer
-
-        if name == 'pressure_mb':
-            self.pressure = float(self.buffer)
+            self.key_value[name] = self.buffer
+            return
 
         if name == 'station_id':
-            self.stationId = self.buffer
+            self.key_value[name] = self.buffer
+            return
 
-        if name == 'temp_c':
-            self.temperature = float(self.buffer)
+        if name == 'latitude' or name == 'longitude':
+            self.key_value[name] = self.buffer
+            return
 
-        if name == 'visibility_mi':
-            self.visibility = float(self.buffer)
+        if name == 'observation_time':
+            return
+
+        if name == 'observation_time_rfc822':
+            self.key_value[name] = self.buffer
+            return
 
         if name == 'weather':
-            self.weather = self.buffer
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'temperature_string':
+            return
+
+        if name == 'temp_c' or name == 'temp_f':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'relative_humidity':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'wind_string':
+            return
+
+        if name == 'wind_dir':
+            return
 
         if name == 'wind_degrees':
-            self.windDirection = float(self.buffer)
+            self.key_value[name] = self.buffer
+            return
 
-        if name == 'wind_gust_kt':
-            self.windGust = float(self.buffer)
+        if name == 'wind_mph' or name == 'wind_kt':
+            self.key_value[name] = self.buffer
+            return
 
-        if name == 'wind_kt':
-            self.windSpeed = float(self.buffer)
+        if name == 'wind_gust_mph' or name == 'wind_gust_kt':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'pressure_string':
+            return
+
+        if name == 'pressure_mb' or name == 'pressure_in':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'dewpoint_string':
+            return
+
+        if name == 'dewpoint_f' or name == 'dewpoint_c':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'windchill_string':
+            return
+
+        if name == 'windchill_f' or name == 'windchill_c':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'heat_index_string':
+            return
+
+        if name == 'heat_index_f' or name == 'heat_index_c':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'visibility_mi':
+            self.key_value[name] = self.buffer
+            return
+
+        if name == 'icon_url_base':
+            return
+
+        if name == 'two_day_history_url':
+            return
+
+        if name == 'icon_url_name':
+            return
+
+        if name == 'ob_url':
+            return
+
+        if name == 'disclaimer_url':
+            return
+
+        if name == 'copyright_url':
+            return
+
+        if name == 'privacy_policy_url':
+            return
+
+        if name == 'current_observation':
+            return
+
+        print "unknown name:%s" % (name)
 
     def char_data(self, data):
         """
@@ -188,8 +169,6 @@ class WxXmlParser:
         """
         read and parse XML file
         """
-#       print "execute read:%s" % (fileName)
-
         inFile = open(fileName, 'r')
         rawXml = inFile.read()
         inFile.close()
@@ -200,7 +179,7 @@ class WxXmlParser:
         p.CharacterDataHandler = self.char_data
         p.Parse(rawXml)
 
-print 'start'
+print 'start WxXmlParser'
 
 #
 # argv[1] = test filename
@@ -212,22 +191,8 @@ if __name__ == '__main__':
     xmlParser = WxXmlParser()
     xmlParser.execute('samples/KAAT.1371505741')
     xmlParser.execute('samples/KSIY.1375076941')
-    print "dewpoint:%s" % (xmlParser.getDewPoint())
-    print "humidity:%s" % (xmlParser.getHumidity())
-    print "latitude:%s" % (xmlParser.getLatitude())
-    print "longitude:%s" % (xmlParser.getLongitude())
-    print "location:%s" % (xmlParser.getLocation())
-    print "time:%s" % (xmlParser.getObservationTime())
-    print "pressure:%s" % (xmlParser.getPressure())
-    print "station:%s" % (xmlParser.getStationId())
-    print "temperature:%s" % (xmlParser.getTemperature())
-    print "visibility:%s" % (xmlParser.getVisibility())
-    print "weather:%s" % (xmlParser.getWeather())
-    print "wind direction:%s" % (xmlParser.getWindDirection())
-    print "wind gust:%s" % (xmlParser.getWindGust())
-    print "wind speed:%s" % (xmlParser.getWindSpeed())
 
-print 'stop'
+print 'stop WxXmlParser'
 
 #;;; Local Variables: ***
 #;;; mode:python ***

@@ -1,6 +1,6 @@
 #
 collectedDir: collected
-curl: /usr/bin/curl -L
+curl: /usr/bin/curl -L -s
 baseUrl: http://w1.weather.gov/xml/current_obs/
 #
 awsAccessKey: bogus
