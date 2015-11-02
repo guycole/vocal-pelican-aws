@@ -9,9 +9,7 @@ Collection, parse and load are performed w/python and boto.
 * Global secondary index of "StationId" (hash) and ObservationTime (number) where station id looks like 'KRBL' and observation time is epoch seconds
 
 ## docker
-```
 Image available via [docker](https://hub.docker.com/r/guycole/vocal-pelican/)
-```
 
 ```
 docker build -t guycole/vocal-pelican .
