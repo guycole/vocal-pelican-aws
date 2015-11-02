@@ -10,7 +10,10 @@ Collection, parse and load are performed w/python and boto.
 
 ## docker
 ```
+Available at https://hub.docker.com/r/guycole/vocal-pelican/
+```
+
+```
 docker build -t guycole/vocal-pelican .
 docker run -e AWS_ACCESS_KEY=<secret> -e AWS_SECRET_KEY=<secret> -e AWS_DEFAULT_REGION=<region> -it --rm guycole/vocal-pelican
 ```
-
