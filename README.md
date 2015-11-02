@@ -10,7 +10,7 @@ Collection, parse and load are performed w/python and boto.
 
 ## docker
 ```
-Available at https://hub.docker.com/r/guycole/vocal-pelican/
+Image available via [docker](https://hub.docker.com/r/guycole/vocal-pelican/)
 ```
 
 ```
